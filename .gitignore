@@ -1,0 +1,13 @@
+# Dependencies
+**/node_modules/
+
+# Build output
+**/dist/
+
+# Local backup copy
+client_backup/
+
+# Environment files
+.env
+.env.*
+!.env.example
