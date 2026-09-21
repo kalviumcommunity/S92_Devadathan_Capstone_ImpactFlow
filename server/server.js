@@ -73,6 +73,26 @@ app.put("/api/beneficiaries/:id", async (req, res) => {
   }
 });
 
+app.delete("/api/beneficiaries/:id", async (req, res) => {
+  try {
+    const beneficiary = await Beneficiary.findByIdAndDelete(req.params.id);
+
+    if (!beneficiary) {
+      return res.status(404).json({
+        message: "Beneficiary not found"
+      });
+    }
+
+    res.json({
+      message: "Beneficiary deleted successfully"
+    });
+  } catch (error) {
+    res.status(400).json({
+      message: "Failed to delete beneficiary",
+      error: error.message
+    });
+  }
+});
 
 const PORT = process.env.PORT || 5000;
 
