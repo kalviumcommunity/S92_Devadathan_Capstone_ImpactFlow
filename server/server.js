@@ -1,33 +1,56 @@
-const express = require("express");
-const mongoose = require("mongoose");
 require("dotenv").config();
+
+const express = require("express");
+const cors = require("cors");
+const mongoose = require("mongoose");
 
 const Beneficiary = require("./models/Beneficiary");
 
 const app = express();
 
+app.use(cors());
 app.use(express.json());
 
-// GET all beneficiaries
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => {
+    console.log("MongoDB connected");
+  })
+  .catch((error) => {
+    console.error("MongoDB connection error:", error.message);
+  });
+
+app.get("/", (req, res) => {
+  res.send("ImpactFlow Server is running");
+});
+
 app.get("/api/beneficiaries", async (req, res) => {
   try {
     const beneficiaries = await Beneficiary.find();
     res.json(beneficiaries);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({
+      message: error.message
+    });
   }
 });
 
-// Connect to MongoDB
-mongoose
-  .connect(process.env.MONGO_URI)
-  .then(() => {
-    console.log("MongoDB connected");
+app.post("/api/beneficiaries", async (req, res) => {
+  try {
+    const beneficiary = new Beneficiary(req.body);
 
-    app.listen(5000, () => {
-      console.log("Server running on port 5000");
+    const savedBeneficiary = await beneficiary.save();
+
+    res.status(201).json(savedBeneficiary);
+  } catch (error) {
+    res.status(400).json({
+      message: error.message
     });
-  })
-  .catch((error) => {
-    console.log("MongoDB connection error:", error.message);
-  });
+  }
+});
+
+const PORT = process.env.PORT || 5000;
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
