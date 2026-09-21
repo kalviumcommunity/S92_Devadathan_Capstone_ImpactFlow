@@ -11,3 +11,8 @@ client_backup/
 .env
 .env.*
 !.env.example
+
+# Recovery backups
+server_backup/
+server_local_backup/
+.gitignore_backup
