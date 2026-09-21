@@ -44,7 +44,8 @@ app.post("/api/beneficiaries", async (req, res) => {
     res.status(201).json(savedBeneficiary);
   } catch (error) {
     res.status(400).json({
-      message: error.message
+      message: "Failed to create beneficiary",
+      error: error.message
     });
   }
 });
