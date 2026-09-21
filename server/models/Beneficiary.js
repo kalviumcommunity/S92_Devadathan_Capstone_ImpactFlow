@@ -37,6 +37,12 @@ const beneficiarySchema = new mongoose.Schema(
       enum: ["Active", "Inactive"],
       default: "Active",
     },
+
+    ngo: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "NGO",
+      required: true
+    },
   },
   {
     timestamps: true,
