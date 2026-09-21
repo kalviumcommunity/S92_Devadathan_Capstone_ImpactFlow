@@ -1,6 +1,8 @@
 require("dotenv").config();
 
 const express = require("express");
+const passport = require("./config/passport");
+const googleAuth = require("./routes/googleAuth");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
@@ -11,8 +13,11 @@ const bcrypt = require("bcryptjs");
 
 const app = express();
 
+app.use(passport.initialize());
+
 app.use(cors());
 app.use(express.json());
+app.use("/auth", googleAuth);
 
 const authenticateToken = (req, res, next) => {
   const authHeader = req.headers.authorization;
