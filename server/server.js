@@ -3,6 +3,7 @@ require("dotenv").config();
 const express = require("express");
 const passport = require("./config/passport");
 const googleAuth = require("./routes/googleAuth");
+const upload = require("./routes/upload");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
@@ -18,6 +19,7 @@ app.use(passport.initialize());
 app.use(cors());
 app.use(express.json());
 app.use("/auth", googleAuth);
+app.use("/api/upload", upload);
 
 const authenticateToken = (req, res, next) => {
   const authHeader = req.headers.authorization;
