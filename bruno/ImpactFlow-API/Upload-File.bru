@@ -1,0 +1,13 @@
+﻿meta {
+  name: Upload File
+  type: http
+  seq: 3
+}
+post {
+  url: {{baseUrl}}/upload
+  body: multipartForm
+  auth: none
+}
+body:multipart-form {
+  file: @file(./sample.txt)
+}
