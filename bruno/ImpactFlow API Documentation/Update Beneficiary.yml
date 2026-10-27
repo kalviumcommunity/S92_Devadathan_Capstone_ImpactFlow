@@ -1,0 +1,29 @@
+info:
+  name: Update Beneficiary
+  type: http
+  seq: 5
+
+http:
+  method: PUT
+  url: "{{baseUrl}}/api/beneficiaries/6ab0c5b4a40d2ca370d82525"
+  body:
+    type: json
+    data: |-
+      {
+        "name": "Anjali",
+        "age": 22,
+        "location": "Bangalore",
+        "phone": "9123456780",
+        "program": "Healthcare Support",
+        "status": "Active"
+      }
+  auth:
+    type: bearer
+    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YWUxMTkxZmE2OTRiYjkwMTY1ZWQyY2QiLCJ1c2VybmFtZSI6ImJydW5vX3Rlc3QiLCJpYXQiOjE3OTMxMzcwNDIsImV4cCI6MTc5MzE0MDY0Mn0.rg4yO5L9_hi69NjfnFBitXBDNYcV-I_pJ0mzzA2q9_g
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false

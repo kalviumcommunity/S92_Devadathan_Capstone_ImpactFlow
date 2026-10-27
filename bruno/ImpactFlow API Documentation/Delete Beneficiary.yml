@@ -1,0 +1,18 @@
+info:
+  name: Delete Beneficiary
+  type: http
+  seq: 6
+
+http:
+  method: DELETE
+  url: "{{baseUrl}}/api/beneficiaries/6ab0c5b4a40d2ca370d82525"
+  auth:
+    type: bearer
+    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YWUxMTkxZmE2OTRiYjkwMTY1ZWQyY2QiLCJ1c2VybmFtZSI6ImJydW5vX3Rlc3QiLCJpYXQiOjE3OTMxMzcwNDIsImV4cCI6MTc5MzE0MDY0Mn0.rg4yO5L9_hi69NjfnFBitXBDNYcV-I_pJ0mzzA2q9_g
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false

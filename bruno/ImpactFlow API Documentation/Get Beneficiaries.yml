@@ -1,0 +1,18 @@
+info:
+  name: Get Beneficiaries
+  type: http
+  seq: 4
+
+http:
+  method: GET
+  url: "{{baseUrl}}/api/beneficiaries"
+  auth:
+    type: bearer
+    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YWUxMTkxZmE2OTRiYjkwMTY1ZWQyY2QiLCJ1c2VybmFtZSI6ImJydW5vX3Rlc3QiLCJpYXQiOjE3OTMxMzcwNDIsImV4cCI6MTc5MzE0MDY0Mn0.rg4yO5L9_hi69NjfnFBitXBDNYcV-I_pJ0mzzA2q9_g
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
