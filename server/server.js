@@ -59,35 +59,87 @@ app.get("/", (req, res) => {
 
 app.post("/api/auth/register", async (req, res) => {
   try {
-    const { username, password } = req.body;
+    const { username, email, name, password } = req.body;
+    const normalizedEmail = email?.trim().toLowerCase();
+    const accountName = name?.trim();
+    const accountUsername = (
+      username || normalizedEmail
+    )?.trim().toLowerCase();
 
-    if (!username || !password) {
+    if (!accountUsername || !password) {
       return res.status(400).json({
-        message: "Username and password are required"
+        message: "Email and password are required"
       });
     }
 
-    const existingUser = await User.findOne({ username });
+    if (normalizedEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
+      return res.status(400).json({
+        message: "Enter a valid email address"
+      });
+    }
+
+    if (password.length < 8) {
+      return res.status(400).json({
+        message: "Password must be at least 8 characters long"
+      });
+    }
+
+    if (name !== undefined && !accountName) {
+      return res.status(400).json({
+        message: "Name cannot be empty"
+      });
+    }
+
+    const existingUser = await User.findOne({
+      $or: [
+        { username: accountUsername },
+        ...(normalizedEmail ? [{ email: normalizedEmail }] : [])
+      ]
+    });
 
     if (existingUser) {
-      return res.status(400).json({
-        message: "Username already exists"
+      return res.status(409).json({
+        message: "An account with this email already exists. Please sign in instead."
       });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = new User({
-      username,
-      password: hashedPassword
+      username: accountUsername,
+      password: hashedPassword,
+      ...(accountName ? { name: accountName } : {}),
+      ...(normalizedEmail ? { email: normalizedEmail } : {})
     });
 
     await user.save();
 
+    const token = jwt.sign(
+      {
+        userId: user._id,
+        username: user.username
+      },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "1h"
+      }
+    );
+
     res.status(201).json({
-      message: "User registered successfully"
+      message: "Account created successfully",
+      token,
+      user: {
+        name: user.name || user.username,
+        email: user.email || ""
+      }
     });
   } catch (error) {
+    if (error.code === 11000) {
+      return res.status(409).json({
+        message: "An account with this email already exists. Please sign in instead."
+      });
+    }
+
     res.status(500).json({
       message: "Registration failed",
       error: error.message
@@ -112,17 +164,30 @@ app.get(
 
 app.post("/api/auth/login", async (req, res) => {
   try {
-    const { username, password } = req.body;
+    const { username, email, password } = req.body;
+    const identifier = (email || username)?.trim();
 
-    if (!username || !password) {
+    if (!identifier || !password) {
       return res.status(400).json({
-        message: "Username and password are required"
+        message: "Email and password are required"
       });
     }
 
-    const user = await User.findOne({ username });
+    const user = await User.findOne({
+      $or: [
+        { username: identifier.toLowerCase() },
+        { email: identifier.toLowerCase() },
+        { username: identifier }
+      ]
+    });
 
     if (!user) {
+      return res.status(401).json({
+        message: "Invalid username or password"
+      });
+    }
+
+    if (!user.password) {
       return res.status(401).json({
         message: "Invalid username or password"
       });
@@ -149,7 +214,11 @@ app.post("/api/auth/login", async (req, res) => {
 
     res.json({
       message: "Login successful",
-      token
+      token,
+      user: {
+        name: user.name || user.username,
+        email: user.email || ""
+      }
     });
   } catch (error) {
     res.status(500).json({
