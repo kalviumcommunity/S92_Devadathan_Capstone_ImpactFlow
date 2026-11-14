@@ -62,6 +62,26 @@ deploy with the detected settings. If you change the API URL, update
 trigger a new deploy. Keep OAuth client secrets and other credentials in the
 hosting provider's environment settings, never in the frontend or repository.
 
+## Run with Docker
+
+From the repository root, start the full application (React frontend, API, and
+MongoDB) with:
+
+```sh
+docker compose up --build
+```
+
+Open `http://localhost:8080`. The frontend container serves the built app and
+proxies `/api` and `/auth` requests to the API container. MongoDB data and
+uploaded files are kept in named Docker volumes. To stop the services, run
+`docker compose down`; add `-v` only if you intend to delete those volumes.
+
+The Compose setup uses local-only defaults for `JWT_SECRET` and does not
+configure Google OAuth. Before using it beyond local development, set a strong
+`JWT_SECRET` and the Google OAuth variables (`GOOGLE_CLIENT_ID`,
+`GOOGLE_CLIENT_SECRET`, `GOOGLE_CALLBACK_URL`, and `CLIENT_URL`) in a local
+`.env` file. Do not commit `.env` or use the local defaults in production.
+
 ## Workspace pages
 
 Programs, reports, and organisation settings have interactive layouts with
