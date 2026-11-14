@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { API_URL } from "../config";
 
 const initialPrograms = [
   {
@@ -130,17 +131,20 @@ function SampleDataNote() {
   );
 }
 
-function ProgramsPage() {
+function ProgramsPage({ token }) {
   const [programs, setPrograms] = useState(readPrograms);
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState("All programs");
   const [showForm, setShowForm] = useState(false);
   const [expandedId, setExpandedId] = useState("");
   const [saveError, setSaveError] = useState("");
+  const [aiError, setAiError] = useState("");
+  const [generatingDescription, setGeneratingDescription] = useState(false);
   const [form, setForm] = useState({
     name: "",
     focus: "",
     location: "",
+    description: "",
     beneficiaries: "",
     budget: "",
     startDate: "",
@@ -201,11 +205,47 @@ function ProgramsPage() {
         name: "",
         focus: "",
         location: "",
+        description: "",
         beneficiaries: "",
         budget: "",
         startDate: "",
         endDate: "",
       });
+    }
+  };
+
+  const handleGenerateDescription = async () => {
+    setAiError("");
+    setGeneratingDescription(true);
+
+    try {
+      const response = await fetch(`${API_URL}/api/ai/program-description`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          name: form.name,
+          focus: form.focus,
+          location: form.location,
+        }),
+      });
+      const result = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(result.message || "AI could not draft the description.");
+      }
+
+      setForm((current) => ({ ...current, description: result.description }));
+    } catch (error) {
+      setAiError(
+        error instanceof TypeError
+          ? `ImpactFlow API isn't reachable at ${API_URL}.`
+          : error.message || "AI could not draft the description. Please try again."
+      );
+    } finally {
+      setGeneratingDescription(false);
     }
   };
 
@@ -263,6 +303,7 @@ function ProgramsPage() {
               <input
                 autoFocus
                 required
+                maxLength="160"
                 value={form.name}
                 onChange={(event) => setForm({ ...form, name: event.target.value })}
                 placeholder="e.g. Community learning centres"
@@ -272,6 +313,7 @@ function ProgramsPage() {
               Focus area
               <input
                 required
+                maxLength="160"
                 value={form.focus}
                 onChange={(event) => setForm({ ...form, focus: event.target.value })}
                 placeholder="Education, health, livelihoods…"
@@ -281,11 +323,42 @@ function ProgramsPage() {
               Location
               <input
                 required
+                maxLength="160"
                 value={form.location}
                 onChange={(event) => setForm({ ...form, location: event.target.value })}
                 placeholder="District or community"
               />
             </label>
+            <div className="workspace-field program-description-field">
+              <label htmlFor="program-description">Program description</label>
+              <textarea
+                id="program-description"
+                rows="4"
+                maxLength="1200"
+                value={form.description}
+                onChange={(event) =>
+                  setForm({ ...form, description: event.target.value })
+                }
+                placeholder="Describe the need, activities, and intended community benefit."
+              />
+              <div className="program-ai-actions">
+                <button
+                  className="secondary-button"
+                  type="button"
+                  onClick={handleGenerateDescription}
+                  disabled={
+                    generatingDescription ||
+                    !form.name.trim() ||
+                    !form.focus.trim() ||
+                    !form.location.trim()
+                  }
+                >
+                  {generatingDescription ? "Drafting…" : "Draft with AI"}
+                </button>
+                <span>Uses program details only. Do not include beneficiary personal information.</span>
+              </div>
+              {aiError && <p className="workspace-save-error" role="alert">{aiError}</p>}
+            </div>
             <label className="workspace-field">
               Planned participants
               <input
@@ -409,6 +482,12 @@ function ProgramsPage() {
                 </div>
                 {expanded && (
                   <div className="program-detail">
+                    {program.description && (
+                      <div className="program-description-detail">
+                        <span>Program description</span>
+                        <p>{program.description}</p>
+                      </div>
+                    )}
                     <div><span>Delivery period</span><strong>{formatDate(program.startDate)} — {formatDate(program.endDate)}</strong></div>
                     <div><span>Approved allocation</span><strong>{currency.format(program.budget)}</strong></div>
                     <div><span>Budget remaining</span><strong>{currency.format(program.budget - spent)}</strong></div>

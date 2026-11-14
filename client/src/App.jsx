@@ -318,7 +318,7 @@ function App() {
           )}
 
           {activePage === "Programs" && (
-            <ProgramsPage />
+            <ProgramsPage token={authState.session.token} />
           )}
 
           {activePage === "Reports" && (
