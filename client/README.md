@@ -49,6 +49,19 @@ and their local filesystem is temporary: uploaded files may be lost when the
 API restarts or redeploys. Use durable external file storage before relying on
 uploads for NGO records.
 
+## Deploy the frontend on Netlify
+
+The repository root includes a `netlify.toml` configured to build the client
+from the `client` directory, publish `client/dist`, and route client-side
+navigation to the app entry point. It also sets `VITE_API_URL` to the
+production Render API.
+
+To enable continuous deployment, import this GitHub repository in Netlify and
+deploy with the detected settings. If you change the API URL, update
+`VITE_API_URL` in Netlify's environment variables or `netlify.toml`, then
+trigger a new deploy. Keep OAuth client secrets and other credentials in the
+hosting provider's environment settings, never in the frontend or repository.
+
 ## Workspace pages
 
 Programs, reports, and organisation settings have interactive layouts with
