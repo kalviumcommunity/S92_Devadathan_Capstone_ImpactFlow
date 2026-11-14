@@ -76,11 +76,24 @@ proxies `/api` and `/auth` requests to the API container. MongoDB data and
 uploaded files are kept in named Docker volumes. To stop the services, run
 `docker compose down`; add `-v` only if you intend to delete those volumes.
 
+On Windows PowerShell, if Docker is not found in an already-open terminal, add
+the user-level Docker CLI directory to that terminal's path. If Compose reports
+a malformed root `.env` file and you want to use the local defaults instead,
+disable automatic `.env` loading:
+
+```powershell
+$env:PATH = "$env:LOCALAPPDATA\Programs\DockerDesktop\resources\bin;$env:PATH"
+$env:COMPOSE_DISABLE_ENV_FILE = "1"
+docker compose up --build
+```
+
 The Compose setup uses local-only defaults for `JWT_SECRET` and does not
-configure Google OAuth. Before using it beyond local development, set a strong
-`JWT_SECRET` and the Google OAuth variables (`GOOGLE_CLIENT_ID`,
-`GOOGLE_CLIENT_SECRET`, `GOOGLE_CALLBACK_URL`, and `CLIENT_URL`) in a local
-`.env` file. Do not commit `.env` or use the local defaults in production.
+configure Google OAuth. Username/password sign-in works without Google
+credentials; Google sign-in reports as unavailable until configured. Before
+using it beyond local development, set a strong `JWT_SECRET` and the Google
+OAuth variables (`GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`,
+`GOOGLE_CALLBACK_URL`, and `CLIENT_URL`) in a local `.env` file. Do not commit
+`.env` or use the local defaults in production.
 
 ## Workspace pages
 

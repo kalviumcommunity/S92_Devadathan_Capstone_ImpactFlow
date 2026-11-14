@@ -1,34 +1,38 @@
 const express = require("express");
 const passport = require("../config/passport");
+const { isGoogleOAuthConfigured } = require("../config/googleOAuth");
 const jwt = require("jsonwebtoken");
 
 const router = express.Router();
 
 router.get("/status", (req, res) => {
-  const requiredSettings = [
-    "GOOGLE_CLIENT_ID",
-    "GOOGLE_CLIENT_SECRET",
-    "GOOGLE_CALLBACK_URL",
-    "JWT_SECRET"
-  ];
-
   res.json({
-    googleConfigured: requiredSettings.every((name) =>
-      Boolean(process.env[name])
-    )
+    googleConfigured:
+      isGoogleOAuthConfigured() && Boolean(process.env.JWT_SECRET)
   });
 });
 
-router.get(
-  "/google",
-  passport.authenticate("google", {
+router.get("/google", (req, res, next) => {
+  if (!isGoogleOAuthConfigured()) {
+    return res.status(503).json({
+      message: "Google sign-in is not configured"
+    });
+  }
+
+  return passport.authenticate("google", {
     scope: ["profile", "email"]
-  })
-);
+  })(req, res, next);
+});
 
 router.get(
   "/google/callback",
   (req, res, next) => {
+    if (!isGoogleOAuthConfigured()) {
+      return res.status(503).json({
+        message: "Google sign-in is not configured"
+      });
+    }
+
     passport.authenticate("google", { session: false }, (error, user) => {
       const clientUrl =
         process.env.CLIENT_URL || process.env.FRONTEND_URL || "http://localhost:5173";
