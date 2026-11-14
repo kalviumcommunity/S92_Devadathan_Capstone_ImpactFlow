@@ -11,6 +11,7 @@ const jwt = require("jsonwebtoken");
 const Beneficiary = require("./models/Beneficiary");
 const User = require("./models/User");
 const bcrypt = require("bcryptjs");
+const { validateRegistrationInput } = require("./utils/registration");
 
 const app = express();
 
@@ -59,36 +60,12 @@ app.get("/", (req, res) => {
 
 app.post("/api/auth/register", async (req, res) => {
   try {
-    const { username, email, name, password } = req.body;
-    const normalizedEmail = email?.trim().toLowerCase();
-    const accountName = name?.trim();
-    const accountUsername = (
-      username || normalizedEmail
-    )?.trim().toLowerCase();
-
-    if (!accountUsername || !password) {
-      return res.status(400).json({
-        message: "Email and password are required"
-      });
+    const registration = validateRegistrationInput(req.body);
+    if (registration.error) {
+      return res.status(400).json({ message: registration.error });
     }
-
-    if (normalizedEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
-      return res.status(400).json({
-        message: "Enter a valid email address"
-      });
-    }
-
-    if (password.length < 8) {
-      return res.status(400).json({
-        message: "Password must be at least 8 characters long"
-      });
-    }
-
-    if (name !== undefined && !accountName) {
-      return res.status(400).json({
-        message: "Name cannot be empty"
-      });
-    }
+    const { normalizedEmail, accountName, accountUsername } = registration;
+    const { password } = req.body;
 
     const existingUser = await User.findOne({
       $or: [
