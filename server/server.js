@@ -12,6 +12,10 @@ const Beneficiary = require("./models/Beneficiary");
 const User = require("./models/User");
 const bcrypt = require("bcryptjs");
 const { validateRegistrationInput } = require("./utils/registration");
+const {
+  ProgramDescriptionError,
+  generateProgramDescription
+} = require("./services/programDescription");
 
 const app = express();
 
@@ -56,6 +60,22 @@ mongoose
 
 app.get("/", (req, res) => {
   res.send("ImpactFlow Server is running");
+});
+
+app.post("/api/ai/program-description", authenticateToken, async (req, res) => {
+  try {
+    const description = await generateProgramDescription(req.body);
+    res.json({ description });
+  } catch (error) {
+    if (error instanceof ProgramDescriptionError) {
+      return res.status(error.statusCode).json({ message: error.message });
+    }
+
+    console.error("Program description generation failed:", error.message);
+    return res.status(500).json({
+      message: "Unable to generate a program description. Please try again."
+    });
+  }
 });
 
 app.post("/api/auth/register", async (req, res) => {

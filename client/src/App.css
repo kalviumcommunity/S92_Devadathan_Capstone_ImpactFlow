@@ -2441,7 +2441,8 @@ css
 }
 
 .workspace-field input,
-.workspace-field select {
+.workspace-field select,
+.workspace-field textarea {
   width: 100%;
   min-width: 0;
   min-height: 40px;
@@ -2455,14 +2456,56 @@ css
   font-weight: 400;
 }
 
-.workspace-field input::placeholder {
+.workspace-field textarea {
+  min-height: 92px;
+  padding: 10px 11px;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.workspace-field input::placeholder,
+.workspace-field textarea::placeholder {
   color: #a5aea8;
 }
 
 .workspace-field input:focus,
-.workspace-field select:focus {
+.workspace-field select:focus,
+.workspace-field textarea:focus {
   border-color: #86a990;
   box-shadow: 0 0 0 3px rgba(90, 139, 103, 0.1);
+}
+
+.program-description-field {
+  grid-column: 1 / -1;
+}
+
+.program-ai-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.program-ai-actions > span {
+  color: #7d8b81;
+  font-size: 9px;
+  font-weight: 400;
+}
+
+.program-ai-actions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.58;
+}
+
+.program-description-detail {
+  grid-column: 1 / -1;
+}
+
+.program-description-detail p {
+  margin: 5px 0 0;
+  color: #59685d;
+  font-size: 11px;
+  line-height: 1.6;
 }
 
 .workspace-form-actions {
@@ -4303,6 +4346,7 @@ html[data-theme="dark"] .workspace-field {
 html[data-theme="dark"] .beneficiary-form .form-field input,
 html[data-theme="dark"] .workspace-field input,
 html[data-theme="dark"] .workspace-field select,
+html[data-theme="dark"] .workspace-field textarea,
 html[data-theme="dark"] .program-search input,
 html[data-theme="dark"] .report-toolbar select,
 html[data-theme="dark"] .login-form input {
@@ -4313,9 +4357,15 @@ html[data-theme="dark"] .login-form input {
 
 html[data-theme="dark"] .beneficiary-form .form-field input:focus,
 html[data-theme="dark"] .workspace-field input:focus,
-html[data-theme="dark"] .workspace-field select:focus {
+html[data-theme="dark"] .workspace-field select:focus,
+html[data-theme="dark"] .workspace-field textarea:focus {
   border-color: #709b77;
   box-shadow: 0 0 0 3px rgba(119, 170, 127, 0.12);
+}
+
+html[data-theme="dark"] .program-ai-actions > span,
+html[data-theme="dark"] .program-description-detail p {
+  color: #adbbb0;
 }
 
 html[data-theme="dark"] .profile-save-row,
