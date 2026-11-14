@@ -1,7 +1,16 @@
 function Footer() {
   return (
-    <footer>
-      <p>© 2026 NGO Beneficiary Management System</p>
+    <footer className="app-footer">
+      <p>
+        © {new Date().getFullYear()} <strong>ImpactFlow</strong>. All rights
+        reserved.
+      </p>
+
+      <div className="footer-links">
+        <span>Built for social impact</span>
+        <span className="footer-divider">·</span>
+        <span>NGO Management Platform</span>
+      </div>
     </footer>
   );
 }
